@@ -42,6 +42,7 @@ export async function loginBot(client) {
             console.error(`ERROR : Connexion impossible : ${error}`)
         }
     }
+    return false
 }
 
 export async function setActivity(client){

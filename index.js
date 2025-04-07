@@ -24,9 +24,7 @@ function main(){
 		log(`INFO : Using discord.js version: ${Discord.version}`);
 		log('INFO : Creating Client')
 		log('INFO : Trying to connect to Discord Servers')
-		let tmp = loginBot(client)
-		if (tmp === "Token error")
-		{
+		if(!loginBot(client)){
 			log('INFO : Stopping program')
 			process.exit()
 		}
@@ -35,10 +33,6 @@ function main(){
 			log(`INFO : ${client.user.username} has logged in, waiting...`)
 			setActivity(client)
 			initOwner()
-
-			recapBotsErrors(client, config)
-			// Deploy Commands
-			//await deployCommand(client)
 		});
 
 		client.on('interactionCreate', async (interaction) => {
