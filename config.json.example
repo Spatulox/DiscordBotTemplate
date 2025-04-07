@@ -1,0 +1,11 @@
+{
+  "token": "",
+  "owner": "",
+  "sendChannelErrors":"yes",
+  "sendToOwnerOrChannel": "1",
+  "scheduledChannelId": "",
+  "logChannelId": "",
+  "errorChannel": "",
+  "clientId": "",
+  "guildId": ""
+}
