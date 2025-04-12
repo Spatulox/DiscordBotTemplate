@@ -36,7 +36,9 @@ export async function loginBot(client) {
             // Si après maxTries tentatives le bot n'est pas connecté, gérer l'erreur.
             if (tries === maxTries) {
                 console.error('ERROR : Impossible de se connecter après plusieurs tentatives.');
+                return false
             }
+            return true
 
         } catch (error) {
             console.error(`ERROR : Connexion impossible : ${error}`)
