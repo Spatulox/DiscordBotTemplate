@@ -1,6 +1,9 @@
 import { DMChannel, EmbedBuilder, InteractionDeferReplyOptions, TextChannel, ThreadChannel, MessageCreateOptions, InteractionReplyOptions, InteractionEditReplyOptions, CommandInteraction, ModalSubmitInteraction, BaseInteraction, MessageFlags } from "discord.js";
 import {log} from "../log.js";
 import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from 'discord.js';
+import { searchClientChannel } from "../guilds/channels.js";
+import { client } from "../client.js";
+import config from "../../config.json"
 
 
 // ------------------------------------------------------------- //
@@ -79,7 +82,17 @@ export type Embed = {
     timestamp: string | Date;
     url?: string;
 };
-  
+
+
+export function isEmbed(obj: any): obj is Embed {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj.title === 'string' &&
+    typeof obj.color === 'number' &&
+    'timestamp' in obj
+  );
+}
 
 
 export function createEmbed(color:  EmbedColor | null = null): Embed{
@@ -95,7 +108,7 @@ export function createEmbed(color:  EmbedColor | null = null): Embed{
         color: embedColor!,
         fields: [],
         footer:{
-            text:"Helldivers [FR] Bot",
+            text:"Discord Bot Template",
             icon_url:"https://cdn.discordapp.com/app-icons/1358119106087358675/2b09d868914dc494b0ce375a9c4e184f.png"
         },
         timestamp: new Date(),
@@ -145,6 +158,19 @@ export async function sendEmbed(embed: Embed, targetChannel: TextChannel | DMCha
     } catch (e) {
         log(`ERROR : Impossible to send the embed '${embed?.title || embed?.description || 'without title :/'}' sent to '${targetChannel.id}' : ${e}`)
         return false
+    }
+}
+
+// ------------------------------------------------------------- //
+
+export async function sendEmbedToInfoChannel(embed: Embed){
+    try{
+        const channel = await searchClientChannel(client, config.logChannelId)
+        if(channel){
+            sendEmbed(embed, channel)
+        }
+    } catch(e){
+        console.error(e)
     }
 }
 
@@ -374,76 +400,4 @@ export async function fillEmbed(embed: Embed): Promise<void>{
     if(!embed?.timestamp){
         embed.timestamp = new Date();
     }
-}
-
-//----------------------------------------------------------------------------//
-
-export function createEmbedFromFile(file: any): EmbedBuilder{
-
-  const embed = new EmbedBuilder()
-    .setColor(file.color)
-    .setTitle(file.title)
-    .setFooter({
-      text: "GWW Wiki - Mis à jour le "+file.footerDate+" par "+file.footerUser,
-      iconURL: "https://cdn.discordapp.com/attachments/1219746976325701652/1219749512504016996/Logo_bot_wiki_3.png?ex=660c6f41&is=65f9fa41&hm=e476d7b2a1ff75cad995c0057ed3bb26f171d3acb2af621f15ae5660f6a115cc&"
-    });
-
-
-  for (const field of file.field){
-    embed.addFields(
-       {
-            name: field.name,
-            value: field.value
-        },
-    )
-  }
-
-  if(file.image){
-    embed.setImage(file.image)
-  }
-  else{
-    embed.setThumbnail(file.thumbnail)
-  }
-
-
-  return embed
-
-}
-
-//----------------------------------------------------------------------------//
-
-export async function embedError(): Promise<{ choice?: ActionRowBuilder<StringSelectMenuBuilder>; embed: EmbedBuilder }> {
-  const today = new Date();
-  
-  // Création de l'embed
-  const embed = new EmbedBuilder()
-      .setColor(0xff1a1a)
-      .setTitle('ERREUR')
-      .addFields({
-          name: ' ',
-          value: '```OUPS ! LA DEMOCRATIE REVIENT VITE !!```',
-          inline: true,
-      })
-      .setFooter({
-          text: `Amiral Super Terre - Mis à jour le ${today.toLocaleDateString()} par Rapport d'Erreurs Automatic`,
-          iconURL: "https://cdn.discordapp.com/attachments/1219746976325701652/1219749512504016996/Logo_bot_wiki_3.png",
-      });
-  
-  // Création du menu déroulant désactivé
-  const selectMenu = new StringSelectMenuBuilder()
-      .setCustomId('wikiSubject')
-      .setPlaceholder('Rien à voir ici')
-      .setDisabled(true)
-      .addOptions(
-        new StringSelectMenuOptionBuilder()
-            .setLabel('Erreur')
-            .setValue('Error')
-            .setDescription('Error')
-    );
-
-  // Ajout du menu déroulant dans une ActionRow
-  const choice = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu);
-
-  // Retourne l'embed et le menu désactivé
-  return { choice, embed };
 }
