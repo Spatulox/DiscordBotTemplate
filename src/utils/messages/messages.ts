@@ -1,9 +1,9 @@
 import config from '../../config.json'
 import { log } from "../log";
 import { searchClientChannel } from "../guilds/channels";
-import {createErrorEmbed, sendEmbed, sendEmbedErrorMessage} from "./embeds";
+import {createErrorEmbed, Embed, isEmbed, returnToSendEmbed, sendEmbed, sendEmbedErrorMessage} from "./embeds";
 import { client } from '../client';
-import { Client, DMChannel, TextChannel, ThreadChannel } from 'discord.js';
+import { Client, DMChannel, MessageCreateOptions, TextChannel, ThreadChannel } from 'discord.js';
 
 //----------------------------------------------------------------------------//
 
@@ -90,17 +90,46 @@ export async function sendMessageToInfoChannel(message: string){
 
 //----------------------------------------------------------------------------//
 
-export async function sendMessageToOwner(message: string){
-    try {
-        const user = await client.users.fetch(config.owner);
-        await user.send(`${message}`);
-        log(`${message}`);
-        return;
-    } catch (error) {
-        const user = await client.users.fetch(config.owner);
-        await user.send(`${message}`);
-        log(`${message}`);
+export async function sendMessageError(message: string){
+    const channel = await searchClientChannel(client, config.errorChannel)
+    if(channel){
+        sendEmbedErrorMessage(`${message}`, channel)
+    } else {
+        sendMessage(`${message}`)
     }
 }
 
 //----------------------------------------------------------------------------//
+
+export async function sendMessageToOwner(message: string | Embed){
+    return await sendMessageToPrivateUser(message, config.owner)
+}
+
+//----------------------------------------------------------------------------//
+
+export async function sendMessageToPrivateUser(message: string | Embed, user_id: string): Promise<boolean>{
+    let messagetoSend: string | MessageCreateOptions
+    if(isEmbed(message)){
+        messagetoSend = returnToSendEmbed(message)
+    } else {
+        messagetoSend = message
+    }
+
+    try {
+        const user = await client.users.fetch(user_id)
+        await user.send(messagetoSend)
+        return true
+    } catch (e) {
+        log("Failed to send private message, retrying")
+        try {
+            const user = await client.users.fetch(config.owner);
+            await user.send(messagetoSend);
+            log(`${message}`);   
+            return true
+        } catch (error) {
+            log("Failed to send private message.")
+            console.error(error)
+        }
+        return false
+    }
+}
