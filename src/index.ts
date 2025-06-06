@@ -1,5 +1,5 @@
 //Librairies
-import {version, ActivityType, ModalSubmitInteraction, CommandInteraction, StringSelectMenuInteraction } from 'discord.js'
+import {version, ActivityType, ModalSubmitInteraction, CommandInteraction, StringSelectMenuInteraction, ContextMenuCommandInteraction } from 'discord.js'
 
 // functions
 import {log} from './utils/log'
@@ -10,8 +10,7 @@ import { executeSelectMenu } from "./selectmenu/executeSelectmenu";
 import { loginBot, setActivity } from './utils/login';
 import { client } from './utils/client';
 import { loadScheduledJobs } from './jobs/jobs';
-import { checkAndUpdateMembers, handleMemberUpdate, handleNewMember } from './utils/guilds/members';
-import { DO_NOT_AFFECT_THIS_USERS, TARGET_GUILD_ID } from './utils/constantes';
+import { executeContextMenu } from './context-menu/executeContextMenu';
 
 async function main(){
 
@@ -29,8 +28,7 @@ async function main(){
 	}
 
 	client.on('ready', async () => {
-		//loadScheduledJobs()
-		//checkAndUpdateMembers();
+		loadScheduledJobs()
 		if(client && client.user){
 			log(`INFO : ${client.user.username} has logged in, waiting...`)
 		}
@@ -38,16 +36,25 @@ async function main(){
 	});
 	
 	client.on('interactionCreate', async (interaction) => {
-		try {executeSelectMenu
-			if (interaction.isCommand()) {
-				// Si l'interaction est une commande slash
+		/*console.log({
+			type: interaction.type,
+			isChatInputCommand: interaction.isChatInputCommand(),
+			isModalSubmit: interaction.isModalSubmit(),
+			isStringSelectMenu: interaction.isStringSelectMenu(),
+			isContextMenuCommand: interaction.isContextMenuCommand(),
+			commandType: interaction.isContextMenuCommand() ? interaction.commandType : null,
+			commandName: "commandName" in interaction ? interaction.commandName : "Unknown",
+			commandId: "commandId" in interaction ? interaction.commandId : "No ID"
+		});*/
+		try {
+			if (interaction.isChatInputCommand()) {
 				executeSlashCommand(interaction as CommandInteraction);
 			} else if (interaction.isModalSubmit()) {
-				// Si l'interaction est un modal submit
 				executeModalSubmit(interaction as ModalSubmitInteraction);
 			} else if (interaction.isStringSelectMenu()) {
-				// Si l'interaction est un selectMenu
 				executeSelectMenu(interaction as StringSelectMenuInteraction);
+			} else if (interaction.isContextMenuCommand()) {
+				executeContextMenu(interaction as ContextMenuCommandInteraction);
 			} else {
 				console.warn(`WARN : Type d'interaction non pris en charge (${interaction.type})`);
 			}
@@ -55,30 +62,6 @@ async function main(){
 			console.error(`ERROR : Une erreur s'est produite lors du traitement de l'interaction`, error);
 		}
 	});
-
-	/*client.on('guildMemberUpdate', async (oldMember, newMember) => {
-        if (newMember.guild.id === TARGET_GUILD_ID) {
-
-            if(DO_NOT_AFFECT_THIS_USERS.includes(newMember.user.id) || newMember.user.bot){
-                console.log(`Skipping user: ${newMember.user.username} (ID: ${newMember.user.id})`);
-                return;
-            }
-			
-            await handleMemberUpdate(oldMember, newMember);
-        }
-    });
-
-    client.on('guildMemberAdd', async (member) => {
-        if (member.guild.id === TARGET_GUILD_ID) {
-
-            if(DO_NOT_AFFECT_THIS_USERS.includes(member.user.id) || member.user.bot){
-                console.log(`Skipping user: ${member.user.username} (ID: ${member.user.id})`);
-                return;
-            }
-
-            await handleNewMember(member);
-        }
-    });*/
 }
 
 main()
