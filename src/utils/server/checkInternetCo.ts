@@ -1,5 +1,8 @@
 import isOnline from 'is-online';
 import { log } from '../log'
+import { Time } from '../times/UnitTime';
+
+const RETRY_TIME = Time.second.SEC_60.toMilliseconds()
 
 export async function checkInternetCo(): Promise<boolean> {
   let internetCo = 0;
@@ -15,7 +18,7 @@ export async function checkInternetCo(): Promise<boolean> {
     } else {
         log('INFO : No internet connection, waiting 1 minute.');
         try{
-          await new Promise((resolve) => setTimeout(resolve, 60000));
+          await new Promise((resolve) => setTimeout(resolve, RETRY_TIME));
         }
         catch{
           log('ERROR : When awaiting the promise to await 1 minutes')
@@ -44,7 +47,7 @@ export async function checkXTimesInternetCo(xTime: number): Promise<boolean> {
       count ++
         log('INFO : No internet connection, waiting 1 minute.');
         try{
-          await new Promise((resolve) => setTimeout(resolve, 60000));
+          await new Promise((resolve) => setTimeout(resolve, RETRY_TIME));
         }
         catch{
           log('ERROR : When awaiting the promise to await 1 minutes')

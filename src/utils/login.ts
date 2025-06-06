@@ -1,5 +1,6 @@
 import { ActivityType, Client } from 'discord.js'
 import config from '../config.json'
+import { Time } from './times/UnitTime';
 
 export async function loginBot(client: Client): Promise<boolean> {
     let ok = false;
@@ -27,7 +28,7 @@ export async function loginBot(client: Client): Promise<boolean> {
                     })
                     .catch(async (error) => {
                         console.log(`${error} Nouvel essai...`);
-                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        await new Promise(resolve => setTimeout(resolve, Time.second.SEC_03.toMilliseconds()));
                         tries++;
                         return false
                     });

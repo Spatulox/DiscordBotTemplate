@@ -1,10 +1,11 @@
 import { Guild, GuildMember, Collection} from 'discord.js';
 import { sendMessage, sendMessageToInfoChannel } from '../messages/messages';
 import { setTimeout } from 'timers/promises';
+import { Time } from '../times/UnitTime';
 
 
 const MAX_ATTEMPTS = 3;
-const RETRY_DELAY = 5 * 60 * 1000; // 5 minutes en millisecondes
+const RETRY_DELAY = Time.minute.MIN_05.toMilliseconds() // 5 minutes en millisecondes
 
 /**
  * Récupère tous les membres d'un serveur Discord avec des tentatives en cas d'échec.

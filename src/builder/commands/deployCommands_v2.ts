@@ -7,6 +7,7 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 import config from '../../config.json';
 import { setTimeout } from "timers/promises";
+import { Time } from "../../utils/times/UnitTime";
 
 interface Command {
     name: string;
@@ -70,7 +71,7 @@ export async function deployCommand(): Promise<void> {
                             } catch (err: any) {
                                 log(`ERREUR : Impossible de déployer la commande "${command.name}" sur la guilde ${guildId}. Raison : ${err.message}`);
                             }
-                            setTimeout(1000)
+                            setTimeout(Time.second.SEC_01.toMilliseconds())
                         }
                         numberCommandDeployed++
                     } else {
