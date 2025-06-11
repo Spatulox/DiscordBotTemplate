@@ -8,14 +8,7 @@ import { Routes } from 'discord-api-types/v10';
 import config from '../../config.json';
 import { setTimeout } from "timers/promises";
 import { Time } from "../../utils/times/UnitTime";
-
-interface Command {
-    name: string;
-    description: string;
-    options?: any[];
-    defaultMemberPermissions?: string[] | bigint;
-    guildID?: string[];
-}
+import { Command } from "../deploy";
 
 // Initialisation du REST après la création du client
 client.rest = new REST({ version: '10' }).setToken(config.token);
@@ -44,16 +37,20 @@ export async function deployCommand(): Promise<void> {
                     const command: Command = await readJsonFile(`./commands/${file}`);
                     
                     // Conversion des permissions textuelles en bits
-                    if (command.defaultMemberPermissions && Array.isArray(command.defaultMemberPermissions)) {
-                        command.defaultMemberPermissions = command.defaultMemberPermissions
+                    if (command.default_member_permissions && Array.isArray(command.default_member_permissions)) {
+                        const bitfield = command.default_member_permissions
                             .map(perm => {
                             const flag = PermissionFlagsBits[perm as keyof typeof PermissionFlagsBits];
-                                if (flag === undefined) {
-                                    throw new Error(`Permission inconnue : "${perm}". Vérifiez l'orthographe dans votre JSON (Enumeration Discord : PermissionFlagsBits.X ).`);
-                                }
-                                return flag;
+                            if (flag === undefined) {
+                                throw new Error(
+                                `Permission inconnue : "${perm}". Vérifiez l'orthographe dans votre JSON (Enumeration Discord : PermissionFlagsBits.X ).`
+                                );
+                            }
+                            return flag;
                             })
                             .reduce((acc, val) => acc | val, BigInt(0));
+
+                        command.default_member_permissions = Number(bitfield)
                     }
 
                     // Déploiement pour des guildes spécifiques ou globalement
