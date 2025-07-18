@@ -1,0 +1,12 @@
+{
+    "clientId": "1358129106767577250",
+    "channelPingLogin":"1358156408209539122",
+    "owner": "556461959042564098",
+    "sendToOwnerOrChannel": "1",
+
+    "logChannelId": "1358156408209539122",
+    "errorChannel": "1358156408209539122",
+    "sendChannelErrors": "yes",
+
+    "excludedInvites":[]
+}
