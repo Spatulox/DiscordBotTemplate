@@ -42,8 +42,10 @@ type Config = {
     logChannelId: string,
     errorChannel: string,
     sendChannelErrors:"yes" | "no",
-    token: string,
+    
     excludedInvites: string[]
+
+    token: string,
 }
 
 
