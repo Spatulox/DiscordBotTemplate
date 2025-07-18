@@ -59,3 +59,57 @@ export async function listFile(directoryPath: string, type: string): Promise<str
         return 'Error';
     }
 }
+
+//----------------------------------------------------------------------------//
+
+export async function writeJsonFileRework(
+  directoryPath: string,
+  name: string,
+  array: any,
+  channelToSendMessage: TextChannel | null = null,
+): Promise<boolean> {
+  if (Array.isArray(array) && array.length === 1 && array[0] === 'Error') {
+    log(`Impossible to save the data for ${name}, the data are 'Error'`);
+    return false;
+  }
+  try {
+    const directories = directoryPath.split(path.sep);
+    let currentPath = '';
+    const json = JSON.stringify(array, null, 2);
+
+    for (const directory of directories) {
+      currentPath = path.join(currentPath, directory);
+      if (!fs.existsSync(currentPath)) {
+        fs.mkdirSync(currentPath);
+      }
+    }
+
+    name = name.split('.json')[0] ?? '';
+    
+    if(name == ''){
+        log("ERROR : Impossible to write the Json file, name = ''")
+        return false
+    }
+    const filePath = path.join(directoryPath, `${name}.json`);
+
+    await fs.promises.writeFile(filePath, json);
+
+    log(`INFO : Data written to ${filePath}`);
+
+    return true;
+  } catch (err) {
+    name = name.split('.json')[0] ?? '';
+    
+    if(name == ''){
+        log("ERROR : Impossible to write the Json file, name = ''")
+        return false
+    }
+    log(`ERROR : Error while writing file ${directoryPath}/${name}.json, ${err}`);
+    if (channelToSendMessage && typeof channelToSendMessage !== 'string') {
+      try {
+        await channelToSendMessage.send(returnToSendEmbed(createErrorEmbed(`ERROR : Error when writing file ${directoryPath}/${name}.json : ${err}`)));
+      } catch {}
+    }
+    return false;
+  }
+}
