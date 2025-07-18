@@ -1,6 +1,8 @@
-import { log } from "../log";
+import { log } from "../log.js";
 import path from 'path'
 import fs from 'fs'
+import { createErrorEmbed, returnToSendEmbed } from "../messages/embeds.js";
+import { TextChannel } from "discord.js";
 
 //----------------------------------------------------------------------------//
 

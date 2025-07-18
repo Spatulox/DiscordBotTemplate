@@ -1,14 +1,14 @@
-import { client } from "../../utils/client";
-import { listJsonFile, readJsonFile } from "../../utils/server/files";
+import { client } from "../../utils/client.js";
+import { listJsonFile, readJsonFile } from "../../utils/server/files.js";
 import { PermissionFlagsBits } from 'discord-api-types/v10';
-import { log } from "../../utils/log";
-import { loginBot } from "../../utils/login";
+import { log } from "../../utils/log.js";
+import { loginBot } from "../../utils/login.js";
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
-import config from '../../config.json';
 import { setTimeout } from "timers/promises";
-import { Time } from "../../utils/times/UnitTime";
-import { Command } from "../deploy";
+import { Time } from "../../utils/times/UnitTime.js";
+import { Command } from "../deploy.js";
+import config from "../../config.js";
 
 
 const PATH = "context-menu"
@@ -41,7 +41,7 @@ export async function deployCommand(): Promise<void> {
                     // Conversion des permissions textuelles en bits
                     if (command.default_member_permissions && Array.isArray(command.default_member_permissions)) {
                         const bitfield = command.default_member_permissions
-                            .map(perm => {
+                            .map((perm: any) => {
                             const flag = PermissionFlagsBits[perm as keyof typeof PermissionFlagsBits];
                             if (flag === undefined) {
                                 throw new Error(
@@ -50,7 +50,7 @@ export async function deployCommand(): Promise<void> {
                             }
                             return flag;
                             })
-                            .reduce((acc, val) => acc | val, BigInt(0));
+                            .reduce((acc: any, val: any) => acc | val, BigInt(0));
 
                         command.default_member_permissions = Number(bitfield)
                     }

@@ -1,6 +1,6 @@
 import { ActivityType, Client } from 'discord.js'
-import config from '../config.json'
-import { Time } from './times/UnitTime';
+import { Time } from './times/UnitTime.js';
+import config from '../config.js';
 
 export async function loginBot(client: Client): Promise<boolean> {
     let ok = false;

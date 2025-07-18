@@ -1,6 +1,6 @@
 // Slashes command in alphabetical order...
 import {CommandInteraction } from "discord.js";
-import { createErrorEmbed, sendInteractionEmbed } from "../utils/messages/embeds";
+import { createErrorEmbed, sendInteractionEmbed } from "../utils/messages/embeds.js";
 
 export async function executeSlashCommand(interaction: CommandInteraction): Promise<void>{
     if (!interaction.isCommand()) return;

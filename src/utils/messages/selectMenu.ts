@@ -1,5 +1,7 @@
 import {ActionRowBuilder, StringSelectMenuBuilder, AnyComponentBuilder, AnySelectMenuInteraction, InteractionReplyOptions, InteractionEditReplyOptions, MessageFlags } from 'discord.js';
-import { log } from '../log';
+import { log } from '../log.js';
+
+
 type SelectMenuType = {
     name: string,
     content: string;
@@ -35,7 +37,7 @@ function returnToSendSelectMenu(selectMenu: StringSelectMenuBuilder, content: st
     return {
         content: content,
         components: [row],
-        flags: MessageFlags.Ephemeral
+        flags: privateVisibility ? MessageFlags.Ephemeral : undefined
     };
 }
 

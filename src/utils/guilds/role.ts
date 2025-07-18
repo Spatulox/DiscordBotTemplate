@@ -1,7 +1,6 @@
 import { Snowflake, GuildMember, Role, Guild } from 'discord.js';
-import { client } from '../client';
-import { TARGET_GUILD_ID } from '../constantes';
-import { sendMessage } from '../messages/messages';
+import { client } from '../client.js';
+import { sendMessage } from '../messages/messages.js';
   /**
    * Supprime un rôle spécifique d'un membre par son nom
    * @param member - Le membre concerné
@@ -22,9 +21,9 @@ import { sendMessage } from '../messages/messages';
     }
   }
 
-export async function addRole(membreId: Snowflake, roleId: Snowflake): Promise<boolean> {
+export async function addRole(membreId: Snowflake,target_guild_id: string, roleId: Snowflake): Promise<boolean> {
     try {
-      const guild: Guild | undefined = client.guilds.cache.get(TARGET_GUILD_ID);
+      const guild: Guild | undefined = client.guilds.cache.get(target_guild_id);
       
       if (!guild) {
         sendMessage("Serveur introuvable");

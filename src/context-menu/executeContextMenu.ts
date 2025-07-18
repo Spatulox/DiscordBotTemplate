@@ -1,5 +1,5 @@
-import { Client, ContextMenuCommandInteraction, ModalSubmitInteraction } from "discord.js";
-import { createEmbed, createErrorEmbed, sendInteractionEmbed } from "../utils/messages/embeds";
+import { ContextMenuCommandInteraction } from "discord.js";
+import { createErrorEmbed, sendInteractionEmbed } from "../utils/messages/embeds.js";
 
 export async function executeContextMenu(interaction: ContextMenuCommandInteraction){
     if (!interaction.isContextMenuCommand()) return;

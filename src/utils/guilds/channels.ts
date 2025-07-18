@@ -1,6 +1,5 @@
 import {Client, DMChannel, GuildBasedChannel, GuildMember, Message, TextChannel, ThreadChannel } from 'discord.js';
-import { client } from '../client';
-import { TARGET_GUILD_ID } from '../constantes';
+import { client } from '../client.js';
 
 //----------------------------------------------------------------------------//
 
@@ -43,9 +42,9 @@ export async function searchMessageChannel(message: Message, channelId: string):
  * @param member_id L'ID du membre à rechercher
  * @returns Le GuildMember trouvé, ou null si absent de la guilde
  */
-export async function searchClientGuildMember(member_id: string): Promise<GuildMember | null> {
+export async function searchClientGuildMember(member_id: string, target_guild_id: string): Promise<GuildMember | null> {
   try {
-    const guild = await client.guilds.fetch(TARGET_GUILD_ID);
+    const guild = await client.guilds.fetch(target_guild_id);
     const member = await guild.members.fetch({ user: member_id, force: true });
 
     return member ?? null;

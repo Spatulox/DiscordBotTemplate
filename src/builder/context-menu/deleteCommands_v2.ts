@@ -1,7 +1,8 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
-import config from '../../config.json';
-import { log } from '../../utils/log';
+import config from '../../config.js';
+import { log } from '../../utils/log.js';
+
 
 async function deleteCommands(): Promise<void> {
     const rest = new REST({ version: '10' }).setToken(config.token);

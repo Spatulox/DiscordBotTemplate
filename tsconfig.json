@@ -1,18 +1,30 @@
 {
     "compilerOptions": {
-        "target": "ES2016",
-        "module": "CommonJS",
-        "esModuleInterop": true,
-        "resolveJsonModule": true,
+        "target": "ES2021",
+        "module": "nodenext",
         "forceConsistentCasingInFileNames": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "strict": true,
         "noUncheckedIndexedAccess": true,
         "skipLibCheck": true,
         "outDir": "dist",
-    },
-    "include": [
-        "src"
-    ]
+        "rootDir": "src",
+
+        /*Only use the es2021/dom lib*/ /*need for "replaceAll" for example*/
+        "lib": ["es2021", "dom"],
+
+        /*JSON*/
+        "moduleResolution": "nodenext",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+
+        /*Liting*/
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "erasableSyntaxOnly": false,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedSideEffectImports": true
+        
+    }
 }

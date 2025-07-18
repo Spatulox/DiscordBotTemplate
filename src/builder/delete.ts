@@ -1,7 +1,7 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
-import config from '../config.json';
-import { log } from '../utils/log';
+import { log } from '../utils/log.js';
+import config from '../config.js';
 
 async function deleteAllCommandsAndMenus(): Promise<void> {
     const rest = new REST({ version: '10' }).setToken(config.token);

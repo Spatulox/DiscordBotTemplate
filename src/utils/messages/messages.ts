@@ -1,13 +1,13 @@
-import config from '../../config.json'
-import { log } from "../log";
-import { searchClientChannel } from "../guilds/channels";
-import {createErrorEmbed, Embed, isEmbed, returnToSendEmbed, sendEmbed, sendEmbedErrorMessage} from "./embeds";
-import { client } from '../client';
+import { log } from "../log.js";
+import { searchClientChannel } from "../guilds/channels.js";
+import {createErrorEmbed, Embed, isEmbed, returnToSendEmbed, sendEmbed, sendEmbedErrorMessage} from "./embeds.js";
+import { client } from '../client.js';
 import { Client, DMChannel, MessageCreateOptions, TextChannel, ThreadChannel } from 'discord.js';
+import config from "../../config.js";
 
 //----------------------------------------------------------------------------//
 
-export async function crosspostMessage(client: Client, sentence: string, channelId: string, reactions = "default"): Promise<boolean> {
+export async function crosspostMessage(client: Client, sentence: string, channelId: string): Promise<boolean> {
 
     try{
         let targetChannel = await searchClientChannel(client, channelId)

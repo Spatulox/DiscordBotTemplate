@@ -1,6 +1,5 @@
-import config from '../../config.json';
-import { Invite, Interaction, TextChannel, Collection } from 'discord.js';
-import { client } from '../client';
+import { Invite } from 'discord.js';
+import config from '../../config.js';
 
 /**
  * Vérifie si une invitation est ancienne (plus d'une heure).

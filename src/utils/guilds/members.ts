@@ -1,7 +1,7 @@
 import { Guild, GuildMember, Collection} from 'discord.js';
-import { sendMessage, sendMessageToInfoChannel } from '../messages/messages';
+import { sendMessage } from '../messages/messages.js';
 import { setTimeout } from 'timers/promises';
-import { Time } from '../times/UnitTime';
+import { Time } from '../times/UnitTime.js';
 
 
 const MAX_ATTEMPTS = 3;

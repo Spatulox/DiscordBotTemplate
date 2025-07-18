@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits, Partials, User} from 'discord.js';
-import config from '../config.json'
-import { searchClientChannel } from './guilds/channels';
-import { log } from './log'
+import { searchClientChannel } from './guilds/channels.js';
+import { log } from './log.js';
+import config from '../config.js';
 
 export const client = new Client({ intents: [
     GatewayIntentBits.Guilds,

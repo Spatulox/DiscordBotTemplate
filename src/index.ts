@@ -1,16 +1,16 @@
 //Librairies
-import {version, ActivityType, ModalSubmitInteraction, CommandInteraction, StringSelectMenuInteraction, ContextMenuCommandInteraction } from 'discord.js'
+import {version, ActivityType, ModalSubmitInteraction, CommandInteraction, StringSelectMenuInteraction, ContextMenuCommandInteraction, Interaction } from 'discord.js'
 
 // functions
-import {log} from './utils/log'
-import { checkInternetCo } from './utils/server/checkInternetCo'
-import { executeSlashCommand } from './commands/executeCommand';
-import { executeModalSubmit } from "./form/executeModalSubmit";
-import { executeSelectMenu } from "./selectmenu/executeSelectmenu";
-import { loginBot, setActivity } from './utils/login';
-import { client } from './utils/client';
-import { loadScheduledJobs } from './jobs/jobs';
-import { executeContextMenu } from './context-menu/executeContextMenu';
+import {log} from './utils/log.js';
+import { checkInternetCo } from './utils/server/checkInternetCo.js';
+import { executeSlashCommand } from './commands/executeCommand.js';
+import { executeModalSubmit } from "./form/executeModalSubmit.js";
+import { executeSelectMenu } from "./selectmenu/executeSelectmenu.js";
+import { loginBot, setActivity } from './utils/login.js';
+import { client } from './utils/client.js';
+import { loadScheduledJobs } from './jobs/jobs.js';
+import { executeContextMenu } from './context-menu/executeContextMenu.js';
 
 async function main(){
 
@@ -35,7 +35,7 @@ async function main(){
 		setActivity(client, 'La Démocratie', ActivityType.Watching)
 	});
 	
-	client.on('interactionCreate', async (interaction) => {
+	client.on('interactionCreate', async (interaction: Interaction) => {
 		/*console.log({
 			type: interaction.type,
 			isChatInputCommand: interaction.isChatInputCommand(),

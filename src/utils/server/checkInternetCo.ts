@@ -1,6 +1,6 @@
 import isOnline from 'is-online';
-import { log } from '../log'
-import { Time } from '../times/UnitTime';
+import { log } from '../log.js'
+import { Time } from '../times/UnitTime.js';
 
 const RETRY_TIME = Time.second.SEC_60.toMilliseconds()
 
