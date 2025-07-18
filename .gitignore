@@ -92,3 +92,5 @@ log/
 config.json
 
 config.dev.json
+
+dist/
