@@ -1,9 +1,9 @@
 export class SimpleMutex {
-    private locked: boolean; // Indique si le mutex est verrouillé
+    private _locked: boolean; // Indique si le mutex est verrouillé
     private queue: Array<() => void>; // File d'attente des fonctions de résolution
 
     constructor() {
-        this.locked = false;
+        this._locked = false;
         this.queue = [];
     }
 
@@ -12,13 +12,13 @@ export class SimpleMutex {
      * @returns Une promesse résolue lorsque le mutex est verrouillé.
      */
     async lock(): Promise<void> {
-        if (this.locked) {
+        if (this._locked) {
             return new Promise((resolve) => {
                 this.queue.push(resolve);
             });
         }
 
-        this.locked = true;
+        this._locked = true;
         return Promise.resolve();
     }
 
@@ -34,6 +34,10 @@ export class SimpleMutex {
             return;
         }
 
-        this.locked = false; // Déverrouille complètement si la file d'attente est vide
+        this._locked = false; // Déverrouille complètement si la file d'attente est vide
+    }
+
+    get locked(): boolean {
+        return this._locked;
     }
 }
