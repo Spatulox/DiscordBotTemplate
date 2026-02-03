@@ -8,6 +8,7 @@ import { Routes } from 'discord-api-types/v10';
 import { setTimeout } from "timers/promises";
 import { Time } from "../utils/times/UnitTime.js";
 import config from "../config.js";
+import {Events} from "discord.js";
 
 export interface Command {
     name: string;
@@ -27,7 +28,7 @@ export async function deployAllCommands(): Promise<void> {
         return;
     }
 
-    client.once("ready", async () => {
+    client.once(Events.ClientReady, async () => {
         log('INFO : Déploiement des commandes slash et menus contextuels');
 
         // 1. Lire les commandes slash

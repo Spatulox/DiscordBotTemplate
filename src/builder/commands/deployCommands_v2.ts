@@ -10,6 +10,7 @@ import { loginBot } from '../../utils/login.js';
 import config from '../../config.js';
 import { Time } from '../../utils/times/UnitTime.js';
 import { Command } from '../deploy.js';
+import {Events} from "discord.js";
 
 // Initialisation du REST après la création du client
 client.rest = new REST({ version: '10' }).setToken(config.token);
@@ -20,7 +21,7 @@ export async function deployCommand(): Promise<void> {
         return;
     }
 
-    client.once("ready", async () => {
+    client.once(Events.ClientReady, async () => {
 
         log('INFO : Déploiement des commandes slash');
         const listFile = await listJsonFile('./commands/');

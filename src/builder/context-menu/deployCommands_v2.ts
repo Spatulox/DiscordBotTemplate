@@ -9,6 +9,7 @@ import { setTimeout } from "timers/promises";
 import { Time } from "../../utils/times/UnitTime.js";
 import { Command } from "../deploy.js";
 import config from "../../config.js";
+import {Events} from "discord.js";
 
 
 const PATH = "context-menu"
@@ -22,7 +23,7 @@ export async function deployCommand(): Promise<void> {
         return;
     }
 
-    client.once("ready", async () => {
+    client.once(Events.ClientReady, async () => {
         log('INFO : Déploiement des commandes slash');
         const listFile = await listJsonFile(`./${PATH}/`);
         if (!listFile) return;

@@ -8,6 +8,7 @@ import { log } from '../../utils/log.js';
 import { listJsonFile, readJsonFile, writeJsonFileRework } from '../../utils/server/files.js';
 import { loginBot } from '../../utils/login.js';
 import config from '../../config.js';
+import {Events} from "discord.js";
 
 
 export interface Command {
@@ -29,7 +30,7 @@ export async function deployCommand(commandPath: string): Promise<void> {
         process.exit()
     }
 
-    client.once("ready", async () => {
+    client.once(Events.ClientReady, async () => {
         log('INFO : Déploiement des commandes slash');
 
         const slashFiles = await listJsonFile(`./${commandPath}/`);
