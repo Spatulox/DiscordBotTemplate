@@ -8,8 +8,9 @@
     "startjs": "node ./dist/index.js",
     "start": "clear && npm run build && npm run startjs",
     "dev": "nodemon --exec tsx src/index.ts",
-    "delete": "node dist/commands/deleteCommands_v2.js",
-    "deploy": "node dist/commands/deployCommands_v2.js"
+    "delete": "node dist/builder/deploy.js",
+    "list": "node dist/builder/list.js",
+    "deploy": "node dist/builder/delete.js"
   },
   "author": "Spatulox",
   "license": "ISC",
