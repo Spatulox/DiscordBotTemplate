@@ -2,11 +2,9 @@
     "clientId": "your-client-id",
     "channelPingLogin":"your-admin-channel-where-you-want-to-be-ping-when-needed",
     "owner": "your-user-id",
-    "sendToOwnerOrChannel": "1 if channel, 0 if owner",
 
     "logChannelId": "your admin channel where you want to have trace",
     "errorChannel": "your admin channel where you want to have error trace",
-    "sendChannelErrors": "yes or no if you want error trace",
 
     "excludedInvites":["when deleting invites, don't delete invite in the excludedInvites"]
 }

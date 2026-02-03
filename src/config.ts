@@ -12,7 +12,7 @@ for (const [key, value] of Object.entries({ DISCORD_TOKEN })) {
 }
 
 if (!DISCORD_TOKEN) {
-  throw new Error('Missing environment variables: DISCORD_TOKEN, MUSIC_PATH');
+  throw new Error('Missing environment variables: DISCORD_TOKEN');
 }
 
 const config = parseConfig(configJson);
@@ -21,27 +21,21 @@ export default config;
 
 
 function parseConfig(json: typeof configJson): Config {
-  if (json.sendChannelErrors !== "yes" && json.sendChannelErrors !== "no") {
-    throw new Error('sendChannelErrors must be "yes" or "no"');
-  }
-
   return {
     ...json,
-    token: DISCORD_TOKEN || '',
-    sendChannelErrors: json.sendChannelErrors,
+    token: DISCORD_TOKEN || ''
   };
 }
 
 
 type Config = {
+    dev: boolean,
     clientId: string,
     channelPingLogin:string,
     owner: string,
-    sendToOwnerOrChannel: string,
 
     logChannelId: string,
     errorChannel: string,
-    sendChannelErrors:"yes" | "no",
     
     excludedInvites: string[]
 

@@ -1,12 +1,11 @@
 {
+    "dev": true,
     "clientId": "",
     "channelPingLogin":"",
     "owner": "",
-    "sendToOwnerOrChannel": "1",
 
     "logChannelId": "",
     "errorChannel": "",
-    "sendChannelErrors": "yes",
 
     "excludedInvites":[]
 }
