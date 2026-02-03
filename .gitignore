@@ -93,3 +93,5 @@ dist/
 config.json
 
 config.dev.json
+
+.idea
