@@ -1,3 +1,6 @@
+# DEPRECATED : Please go see the (SimpleDiscordBot)[https://github.com/Spatulox/SimpleDiscordBot/]
+
+
 # Discord Bot Template
 
 This repo is a Template to develop a Discord Bot with basic functionnalities
