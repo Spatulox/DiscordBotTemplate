@@ -1,4 +1,4 @@
-# DEPRECATED : Please go see the (SimpleDiscordBot)[https://github.com/Spatulox/SimpleDiscordBot/]
+# DEPRECATED : Please go see the [SimpleDiscordBot](https://github.com/Spatulox/SimpleDiscordBot/)
 
 
 # Discord Bot Template
