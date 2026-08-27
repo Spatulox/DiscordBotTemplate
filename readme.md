@@ -1,5 +1,9 @@
 # Discord Bot Template
 
+[![discord.js](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/discord.js?logo=discord&logoColor=white&label=discord.js)](https://discord.js.org/)
+[![simplediscordbot](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/@spatulox%2Fsimplediscordbot?label=simplediscordbot)](https://github.com/Spatulox/SimpleDiscordBot)
+[![latest release](https://img.shields.io/github/v/release/Spatulox/DiscordBotTemplate?label=template)](../../releases)
+
 A ready-to-use Discord bot template built on
 [SimpleDiscordBot](https://github.com/Spatulox/SimpleDiscordBot).
 
@@ -11,6 +15,21 @@ deployment, so this repository only contains what is specific to *your* bot.
 | [`@spatulox/simplediscordbot`](https://www.npmjs.com/package/@spatulox/simplediscordbot) | `Bot` (auto-login + logs), `EmbedManager`, `GuildManager`, `Time`, `FileManager`, `DiscordRegex`… |
 | [`@spatulox/discord-module`](https://www.npmjs.com/package/@spatulox/discord-module) | `Module` / `ModuleManager` / `ModuleUI` (toggleable features) and `InteractionsManager` |
 | `dim` (bundled with the two above) | Interactive CLI that **generates** the `handler/*.json` interactions and deploys them to Discord |
+
+## Compatibility
+
+| Template | discord.js | `@spatulox/simplediscordbot` | Node |
+|---|---|---|---|
+| current | 14.x | 3.x | >= 18 |
+
+The badges above read `package.json` straight from the repository, so they
+always show what this branch actually depends on — nothing to keep in sync by
+hand.
+
+A new discord.js major means a new template major. The
+[releases](../../releases) say what changed, and each one is tagged:
+`git checkout <tag>` gets you back the state that worked with the previous
+major.
 
 ## Setup
 
