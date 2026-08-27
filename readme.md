@@ -1,5 +1,9 @@
 # Discord Bot Template — multi bot
 
+[![discord.js](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/discord.js?branch=feat%2Fmulti-bot&logo=discord&logoColor=white&label=discord.js)](https://discord.js.org/)
+[![simplediscordbot](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/@spatulox%2Fsimplediscordbot?branch=feat%2Fmulti-bot&label=simplediscordbot)](https://github.com/Spatulox/SimpleDiscordBot)
+[![latest release](https://img.shields.io/github/v/release/Spatulox/DiscordBotTemplate?label=template)](../../releases)
+
 Several Discord bots living in one repository, built on
 [SimpleDiscordBot](https://github.com/Spatulox/SimpleDiscordBot), arranged like
 [helldivers-FR-bot-dev](https://github.com/Spatulox/helldivers-FR-bot).
@@ -17,7 +21,21 @@ For the single-bot version of this template, see the `main` branch.
 |---|---|
 | [`@spatulox/simplediscordbot`](https://www.npmjs.com/package/@spatulox/simplediscordbot) | `Bot` (auto-login + logs), `EmbedManager`, `GuildManager`, `Time`, `FileManager`, `DiscordRegex`… |
 | [`@spatulox/discord-module`](https://www.npmjs.com/package/@spatulox/discord-module) | `Module` / `ModuleManager` / `ModuleUI` (toggleable features) and `InteractionsManager` |
-| `dim` (bundled with the two above) | CLI deploying the `handler/*.json` interactions to Discord |
+| `dim` (bundled with the two above) | Interactive CLI that **generates** the `handler/*.json` interactions and deploys them to Discord |
+
+## Compatibility
+
+| Template | discord.js | `@spatulox/simplediscordbot` | Node |
+|---|---|---|---|
+| current | 14.x | 3.x | >= 18 |
+
+The badges above read `package.json` straight from this branch, so they always
+show what it actually depends on — nothing to keep in sync by hand.
+
+A new discord.js major means a new template major. The
+[releases](../../releases) say what changed, and each one is tagged:
+`git checkout <tag>` gets you back the state that worked with the previous
+major.
 
 ## Setup
 
@@ -43,16 +61,64 @@ npm start         # build then run both from dist/
 > Always run from the repository root : the `.env` and `handler/` paths are
 > resolved from the current working directory.
 
-## Deploy the slash commands / context menus
+## Manage the slash commands / context menus
 
 ```bash
-npx dim
+# from the repository root, once per bot
+env $(grep -vE '^\s*(#|$)' src/bot_one/.env.bot_one | xargs) \
+    DISCORD_INTERACTION_FOLDER=./src/bot_one/handler \
+    npx dim
 ```
 
-The CLI reads `DISCORD_INTERACTION_FOLDER` — set it per bot
-(`./src/bot_one/handler`) and run `dim` once per bot. It lets you deploy,
-update, delete and list your interactions. It writes the Discord-assigned `id`
-back into each json file — commit that.
+`dim` ([DiscordInteractionManager](https://github.com/spatulox-discord/DiscordInteractionManager))
+is an interactive CLI. **You never have to write the json by hand** — it
+generates it for you:
+
+```
+💠 Discord Interaction Manager CLI
+════════════════════════════════════════
+1. Manage Interactions      -> deploy / update / delete / list
+2. Generate Files           -> create a slash command or a context menu json
+3. Help
+4. Exit
+```
+
+- **Generate Files** walks you through name, description, options, permissions
+  and scope, then writes the json into the right folder.
+- **Manage Interactions** deploys it to Discord, and writes the id Discord
+  assigned back into the file — commit that, it is what later updates target.
+- Listing can also pull the commands already registered on Discord back down
+  into json files, under `generated_commands/`.
+
+### Where the files go
+
+`dim` reads and writes `<DISCORD_INTERACTION_FOLDER>/<category>` and appends
+`_dev` when `DISCORD_BOT_DEV` is set — exactly the convention
+`src/share/HandlersPath.ts` uses to read them back at runtime.
+
+**Run it once per bot.** `dim` is a separate process: it calls
+`dotenv.config()` with no argument, so it only ever reads a `.env` at the
+repository root — never `src/<bot>/.env.<bot>`. There is no root `.env` here,
+which is why the command above feeds it that bot's variables explicitly
+(`DISCORD_BOT_TOKEN` and `DISCORD_BOT_CLIENTID` included, not just the folder).
+
+If you prefer, drop a temporary root `.env` holding the variables of the bot
+you are working on and just run `npx dim`. Its own default folder is
+`./handlers`, which no bot uses here, so `DISCORD_INTERACTION_FOLDER` is always
+required.
+
+### The fields it manages
+
+| Field | Who fills it |
+|---|---|
+| `name`, `description`, `options`, `contexts`… | you, through the generator |
+| `command_scope` | you, at generation time — `"global"` or `"guild"` |
+| `default_member_permissions_string` | you — an array of discord.js `PermissionFlagsBits` keys, e.g. `["ModerateMembers"]`, empty for everyone |
+| `default_member_permissions` | `dim`, computed from the field above |
+| `id` | `dim`, after the first deploy — a string when global, a `{guildId: id}` map when guild-scoped |
+
+> Changing the scope of an existing interaction needs **both** `command_scope`
+> and `id` edited to the matching shape. A plain update will not do it.
 
 ## Layout
 
@@ -68,7 +134,7 @@ src/
   bot_one/
     .env.bot_one             this bot's token (gitignored)
     handler/                 interaction manifests, deployed by `dim`
-      commands/ commands_dev/ context_menu/ context_menu_dev/
+      commands/ commands_dev/ context_menu/ context_menu_dev/   (generated by `dim`)
     src/
       index.ts               entry point : builds the Bot and registers everything
       client.ts              this bot's Client and intents
@@ -124,8 +190,11 @@ written by `CacheManager` never collides between bots.
 
 ## Add a slash command
 
-1. Create `src/<bot>/handler/commands/mycommand.json` (and its `_dev` twin with
-   a different `name`).
+1. `npx dim` -> **Generate Files** -> slash command, with
+   `DISCORD_INTERACTION_FOLDER` pointing at that bot. It writes
+   `src/<bot>/handler/commands/mycommand.json` for you. Run it once with
+   `DISCORD_BOT_DEV` set and once without to get the `_dev` twin, giving the
+   dev one a different `name`.
 2. Add `'mycommand'` to `HANDLERS_PATHS.commands` in `src/share/HandlersPath.ts`
    — it is a typed whitelist shared by every bot, `Handlers.load` throws for
    anything missing.
@@ -136,8 +205,7 @@ written by `CacheManager` never collides between bots.
    const json = await Handlers.load(RegisterInteraction.BOT, 'commands', 'mycommand');
    this.manager.registerSlash(json.name, mycommand)
    ```
-5. `npx dim` (with `DISCORD_INTERACTION_FOLDER` pointing at that bot's
-   `handler/`) to push it to Discord.
+5. `npx dim` -> **Manage Interactions** to deploy it to Discord.
 
 Buttons, modals and select menus follow the same pattern, minus the json
 (their name is the `customId` you set). `InteractionMatchType.START_WITH`
