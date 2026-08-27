@@ -1,4 +1,5 @@
 {
+    "dev": true,
     "clientId": "your-client-id",
     "channelPingLogin":"your-admin-channel-where-you-want-to-be-ping-when-needed",
     "owner": "your-user-id",

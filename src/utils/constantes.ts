@@ -1,6 +1,3 @@
-export const MAX_NICKNAME_LENGTH: number = 32
-export const DO_NOT_AFFECT_THIS_USERS: string[] = []
-
 export const SPACE = "\u200B"
 
 
