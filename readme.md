@@ -10,7 +10,7 @@ deployment, so this repository only contains what is specific to *your* bot.
 |---|---|
 | [`@spatulox/simplediscordbot`](https://www.npmjs.com/package/@spatulox/simplediscordbot) | `Bot` (auto-login + logs), `EmbedManager`, `GuildManager`, `Time`, `FileManager`, `DiscordRegex`… |
 | [`@spatulox/discord-module`](https://www.npmjs.com/package/@spatulox/discord-module) | `Module` / `ModuleManager` / `ModuleUI` (toggleable features) and `InteractionsManager` |
-| `dim` (bundled with the two above) | CLI deploying the `handler/*.json` interactions to Discord |
+| `dim` (bundled with the two above) | Interactive CLI that **generates** the `handler/*.json` interactions and deploys them to Discord |
 
 ## Setup
 
@@ -31,15 +31,54 @@ npm start       # build then run dist/
 > Always run from the repository root : the `.env` and `handler/` paths are
 > resolved from the current working directory.
 
-## Deploy the slash commands / context menus
+## Manage the slash commands / context menus
 
 ```bash
 npx dim
 ```
 
-The CLI reads `DISCORD_INTERACTION_FOLDER` (`./handler`) and lets you deploy,
-update, delete and list your interactions. It writes the Discord-assigned `id`
-back into each json file — commit that.
+`dim` ([DiscordInteractionManager](https://github.com/spatulox-discord/DiscordInteractionManager))
+is an interactive CLI. **You never have to write the json by hand** — it
+generates it for you:
+
+```
+💠 Discord Interaction Manager CLI
+════════════════════════════════════════
+1. Manage Interactions      -> deploy / update / delete / list
+2. Generate Files           -> create a slash command or a context menu json
+3. Help
+4. Exit
+```
+
+- **Generate Files** walks you through name, description, options, permissions
+  and scope, then writes the json into the right folder.
+- **Manage Interactions** deploys it to Discord, and writes the id Discord
+  assigned back into the file — commit that, it is what later updates target.
+- Listing can also pull the commands already registered on Discord back down
+  into json files, under `generated_commands/`.
+
+### Where the files go
+
+`dim` reads and writes `<DISCORD_INTERACTION_FOLDER>/<category>` and appends
+`_dev` when `DISCORD_BOT_DEV` is set — exactly the convention
+`src/utils/HandlersPath.ts` uses to read them back at runtime.
+
+Its default folder is `./handlers`; this template sets
+`DISCORD_INTERACTION_FOLDER=./handler` in `.env` to keep the singular name used
+by the rest of the project. Change either one, change both.
+
+### The fields it manages
+
+| Field | Who fills it |
+|---|---|
+| `name`, `description`, `options`, `contexts`… | you, through the generator |
+| `command_scope` | you, at generation time — `"global"` or `"guild"` |
+| `default_member_permissions_string` | you — an array of discord.js `PermissionFlagsBits` keys, e.g. `["ModerateMembers"]`, empty for everyone |
+| `default_member_permissions` | `dim`, computed from the field above |
+| `id` | `dim`, after the first deploy — a string when global, a `{guildId: id}` map when guild-scoped |
+
+> Changing the scope of an existing interaction needs **both** `command_scope`
+> and `id` edited to the matching shape. A plain update will not do it.
 
 ## Dev vs prod
 
@@ -57,7 +96,7 @@ production (`DISCORD_BOT_DEV=false` would still be truthy).
 ## Layout
 
 ```
-handler/                  interaction manifests, deployed by `dim`
+handler/                  interaction manifests, generated + deployed by `dim`
   commands/               slash commands (prod)
   commands_dev/           slash commands (dev), different `name`
   context_menu/           context menus (prod)
@@ -79,8 +118,10 @@ src/
 
 ## Add a slash command
 
-1. Create `handler/commands/mycommand.json` (and its `_dev` twin with a
-   different `name`).
+1. `npx dim` -> **Generate Files** -> slash command. It writes
+   `handler/commands/mycommand.json` for you. Run it once with
+   `DISCORD_BOT_DEV` set and once without to get the `_dev` twin, giving the
+   dev one a different `name`.
 2. Add `'mycommand'` to `HANDLERS_PATHS.commands` in `src/utils/HandlersPath.ts`
    — it is a typed whitelist, `Handlers.load` throws for anything missing.
 3. Write the handler in `src/interactions/commands/mycommand.ts`.
@@ -89,7 +130,7 @@ src/
    const json = await Handlers.load('commands', 'mycommand');
    this.manager.registerSlash(json.name, mycommand)
    ```
-5. `npx dim` to push it to Discord.
+5. `npx dim` -> **Manage Interactions** to deploy it to Discord.
 
 Buttons, modals and select menus follow the same pattern, minus the json
 (their name is the `customId` you set). `InteractionMatchType.START_WITH`
