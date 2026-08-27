@@ -1,7 +1,7 @@
 # Discord Bot Template — multi bot
 
-[![discord.js](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/discord.js?branch=feat%2Fmulti-bot&logo=discord&logoColor=white&label=discord.js)](https://discord.js.org/)
-[![simplediscordbot](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/@spatulox%2Fsimplediscordbot?branch=feat%2Fmulti-bot&label=simplediscordbot)](https://github.com/Spatulox/SimpleDiscordBot)
+[![discord.js](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/discord.js/feat/multi-bot?logo=discord&logoColor=white&label=discord.js)](https://discord.js.org/)
+[![simplediscordbot](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/@spatulox%2Fsimplediscordbot/feat/multi-bot?label=simplediscordbot)](https://github.com/Spatulox/SimpleDiscordBot)
 [![latest release](https://img.shields.io/github/v/release/Spatulox/DiscordBotTemplate?label=template)](../../releases)
 
 Several Discord bots living in one repository, built on
