@@ -2,7 +2,6 @@
 
 [![discord.js](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/discord.js?logo=discord&logoColor=white&label=discord.js)](https://discord.js.org/)
 [![simplediscordbot](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/@spatulox%2Fsimplediscordbot?label=simplediscordbot)](https://github.com/Spatulox/SimpleDiscordBot)
-[![latest release](https://img.shields.io/github/v/release/Spatulox/DiscordBotTemplate?label=template)](../../releases)
 
 A ready-to-use Discord bot template built on
 [SimpleDiscordBot](https://github.com/Spatulox/SimpleDiscordBot).
