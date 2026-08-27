@@ -64,6 +64,8 @@ typings/
 
 # dotenv environment variables file
 .env
+.env.*
+!.env.example
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -95,3 +97,6 @@ config.json
 config.dev.json
 
 .idea
+
+# @spatulox/utils CacheManager storage
+.utilscache/
