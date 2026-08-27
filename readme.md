@@ -1,10 +1,17 @@
-# Discord Bot Template
+# Discord Bot Template — multi bot
 
-A ready-to-use Discord bot template built on
-[SimpleDiscordBot](https://github.com/Spatulox/SimpleDiscordBot).
+Several Discord bots living in one repository, built on
+[SimpleDiscordBot](https://github.com/Spatulox/SimpleDiscordBot), arranged like
+[helldivers-FR-bot-dev](https://github.com/Spatulox/helldivers-FR-bot).
 
-The framework handles login, logging, modules, interactions and command
-deployment, so this repository only contains what is specific to *your* bot.
+Each bot is an independent folder under `src/` with its own token, its own
+`Client` and its own entry point; `src/share/` holds everything two bots would
+otherwise duplicate. They are started together by `concurrently`.
+
+> **One bot = one process.** `Bot`, `ModuleManager` and `InteractionsManager`
+> are process-wide singletons, so two bots cannot share a single Node process.
+
+For the single-bot version of this template, see the `main` branch.
 
 | Package | Role |
 |---|---|
@@ -16,16 +23,21 @@ deployment, so this repository only contains what is specific to *your* bot.
 
 ```bash
 npm install
-cp .env.example .env   # then fill DISCORD_BOT_TOKEN and DISCORD_BOT_CLIENTID
+cp src/bot_one/.env.bot_one.example src/bot_one/.env.bot_one
+cp src/bot_two/.env.bot_two.example src/bot_two/.env.bot_two
 ```
 
-Then fill the channel and guild ids in `src/constantes.ts`.
+Fill `DISCORD_BOT_TOKEN` and `DISCORD_BOT_CLIENTID` in each file — **one
+Discord application per bot** — then fill the channel and guild ids in each
+`src/<bot>/src/constantes.ts`.
 
 ## Run
 
 ```bash
-npm run dev     # nodemon + ts-node, restarts on every .ts change
-npm start       # build then run dist/
+npm run dev       # both bots, nodemon + ts-node, restart on every .ts change
+npm run bot_one   # one bot alone
+npm run bot_two
+npm start         # build then run both from dist/
 ```
 
 > Always run from the repository root : the `.env` and `handler/` paths are
@@ -37,9 +49,62 @@ npm start       # build then run dist/
 npx dim
 ```
 
-The CLI reads `DISCORD_INTERACTION_FOLDER` (`./handler`) and lets you deploy,
+The CLI reads `DISCORD_INTERACTION_FOLDER` — set it per bot
+(`./src/bot_one/handler`) and run `dim` once per bot. It lets you deploy,
 update, delete and list your interactions. It writes the Discord-assigned `id`
 back into each json file — commit that.
+
+## Layout
+
+```
+src/
+  share/                     everything used by more than one bot
+    BotType.ts               enum : one entry per bot, value = folder name
+    HandlersPath.ts          loads handler json for a given bot, dev/prod aware
+    modules/                 shared modules      (LogMessages)
+    interactions/            shared interactions (ping)
+    managers/                shared helpers around discord.js entities
+    utils/                   shared utilities    (rateLimiter)
+  bot_one/
+    .env.bot_one             this bot's token (gitignored)
+    handler/                 interaction manifests, deployed by `dim`
+      commands/ commands_dev/ context_menu/ context_menu_dev/
+    src/
+      index.ts               entry point : builds the Bot and registers everything
+      client.ts              this bot's Client and intents
+      constantes.ts          this bot's channel / guild ids
+      activities.ts          activities randomly displayed
+      interactions/          this bot's own interactions
+      modules/               this bot's own modules
+      utils/
+        RegisterInteractions.ts  maps interaction names -> functions
+        RegisterModules.ts       registers and enables the modules
+  bot_two/                   same structure
+```
+
+### The one rule about `src/share/`
+
+**`share/` must never import from a bot folder.** The flow is one way:
+`bot_one -> share`, `bot_two -> share`. When shared code needs to know which
+bot is running it, pass a `BotType` in — that is what `LogMessages` does:
+
+```ts
+this.manager.register(new LogMessages(RegisterModules.BOT))
+```
+
+Importing `bot_one/` from `share/` creates a cycle between the library and the
+apps, and drags bot-specific code into every bot that touches `share`.
+
+### What the example bots show
+
+- `/example` on bot one and `/example_two` on bot two — a command that belongs
+  to a single bot, living in `src/<bot>/src/interactions/commands/`.
+- `/ping` on **both** — one implementation in
+  `src/share/interactions/commands/ping.ts`, registered twice, each bot loading
+  its own `handler/commands/shared_example.json`.
+- `LogMessages` — one shared module registered by both bots, told which bot it
+  belongs to.
+- `ExampleModule` — a module only one bot needs.
 
 ## Dev vs prod
 
@@ -47,49 +112,32 @@ back into each json file — commit that.
 
 - `handler/commands_dev/` and `handler/context_menu_dev/` are loaded instead of
   `handler/commands/` and `handler/context_menu/`. The `_dev` files declare a
-  different `name`, so your dev bot and your prod bot can live on Discord side
+  different `name`, so your dev bots and your prod bots can live on Discord side
   by side.
-- `src/constantes.ts` returns the DEV ids instead of the PROD ones.
+- `src/<bot>/src/constantes.ts` returns the DEV ids instead of the PROD ones.
 
 Any non-empty value means dev — set the variable to an **empty** value for
 production (`DISCORD_BOT_DEV=false` would still be truthy).
 
-## Layout
-
-```
-handler/                  interaction manifests, deployed by `dim`
-  commands/               slash commands (prod)
-  commands_dev/           slash commands (dev), different `name`
-  context_menu/           context menus (prod)
-  context_menu_dev/       context menus (dev)
-src/
-  index.ts                entry point : builds the Bot and registers everything
-  client.ts               the discord.js Client and its intents
-  constantes.ts           channel / guild ids, switched on DISCORD_BOT_DEV
-  activities.ts           activities randomly displayed by the bot
-  interactions/           the code behind each interaction
-    commands/ context-menu/ modal/ selectmenu/ buttons/
-  modules/                toggleable features listening to Discord events
-  utils/
-    HandlersPath.ts       loads handler json, dev/prod aware
-    RegisterInteractions.ts  maps interaction names -> functions
-    RegisterModules.ts    registers and enables the modules
-    rateLimiter.ts        per-user rate limit helper
-```
+Each bot also sets `CACHE_FOLDER` to its own folder, so the `.utilscache/`
+written by `CacheManager` never collides between bots.
 
 ## Add a slash command
 
-1. Create `handler/commands/mycommand.json` (and its `_dev` twin with a
-   different `name`).
-2. Add `'mycommand'` to `HANDLERS_PATHS.commands` in `src/utils/HandlersPath.ts`
-   — it is a typed whitelist, `Handlers.load` throws for anything missing.
-3. Write the handler in `src/interactions/commands/mycommand.ts`.
-4. Register it in `RegisterInteraction.slash()`:
+1. Create `src/<bot>/handler/commands/mycommand.json` (and its `_dev` twin with
+   a different `name`).
+2. Add `'mycommand'` to `HANDLERS_PATHS.commands` in `src/share/HandlersPath.ts`
+   — it is a typed whitelist shared by every bot, `Handlers.load` throws for
+   anything missing.
+3. Write the handler in `src/<bot>/src/interactions/commands/mycommand.ts`, or
+   in `src/share/interactions/commands/` if several bots need it.
+4. Register it in that bot's `RegisterInteraction.slash()`:
    ```ts
-   const json = await Handlers.load('commands', 'mycommand');
+   const json = await Handlers.load(RegisterInteraction.BOT, 'commands', 'mycommand');
    this.manager.registerSlash(json.name, mycommand)
    ```
-5. `npx dim` to push it to Discord.
+5. `npx dim` (with `DISCORD_INTERACTION_FOLDER` pointing at that bot's
+   `handler/`) to push it to Discord.
 
 Buttons, modals and select menus follow the same pattern, minus the json
 (their name is the `customId` you set). `InteractionMatchType.START_WITH`
@@ -98,11 +146,24 @@ lets one handler serve every `customId` sharing a prefix.
 ## Add a module
 
 Extend `Module` (or `ModuleWithCache` for persistent state), declare the
-Discord events it listens to, and register it in `RegisterModules.init()`.
-Modules can be enabled/disabled live from the `ModuleUI` panel posted in the
-`module_ui` channel — see `src/modules/ExampleModule.ts`.
+Discord events it listens to, and register it in that bot's
+`RegisterModules.init()`. Put it in `src/share/modules/` if more than one bot
+needs it. Modules can be enabled/disabled live from the `ModuleUI` panel posted
+in the `module_ui` channel.
 
-## Multi-bot
+## Add a third bot
 
-The `feat/multi-bot` branch holds the same template arranged for several bots
-running side by side from one repository, with a shared `src/share/` folder.
+1. Copy `src/bot_one/` to `src/bot_three/`.
+2. Add `BOT_THREE = "bot_three"` to `src/share/BotType.ts` — the value must
+   match the folder name.
+3. In the new folder, update `dotenv.config({path})` in `index.ts`, `botName`,
+   the `BOT` constant in both `Register*.ts`, and the `name` of every
+   `handler/**/*.json` so it does not clash with another bot on the same server.
+4. Create `src/bot_three/.env.bot_three` with its own token and
+   `CACHE_FOLDER=./src/bot_three`.
+5. Add the scripts to `package.json`:
+   ```json
+   "dev": "concurrently \"npm run bot_one\" \"npm run bot_two\" \"npm run bot_three\"",
+   "bot_three": "nodemon -e ts --exec ts-node src/bot_three/src/index.ts"
+   ```
+   and add it to `startjs` too.
