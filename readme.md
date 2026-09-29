@@ -108,8 +108,9 @@ by the rest of the project. Change either one, change both.
   by side.
 - `src/constantes.ts` returns the DEV ids instead of the PROD ones.
 
-Any non-empty value means dev — set the variable to an **empty** value for
-production (`DISCORD_BOT_DEV=false` would still be truthy).
+Use `DISCORD_BOT_DEV=true` for dev and `DISCORD_BOT_DEV=false` (or empty) for
+production. Stick to `true` / `1` for dev : the bot also accepts other values,
+but the `dim` CLI only recognises these two.
 
 ## Layout
 
