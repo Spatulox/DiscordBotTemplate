@@ -1,10 +1,10 @@
 # Discord Bot Template — multi bot
 
 [![discord.js](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/discord.js/feat/multi-bot?logo=discord&logoColor=white&label=discord.js)](https://discord.js.org/)
-[![simplediscordbot](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/@spatulox%2Fsimplediscordbot/feat/multi-bot?label=simplediscordbot)](https://github.com/Spatulox/SimpleDiscordBot)
+[![simplediscordbot](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/@spatulox%2Fsimplediscordbot/feat/multi-bot?label=simplediscordbot)](https://github.com/spatulox-discord/SimpleDiscordBot)
 
 Several Discord bots living in one repository, built on
-[SimpleDiscordBot](https://github.com/Spatulox/SimpleDiscordBot), arranged like
+[SimpleDiscordBot](https://github.com/spatulox-discord/SimpleDiscordBot), arranged like
 [helldivers-FR-bot-dev](https://github.com/Spatulox/helldivers-FR-bot).
 
 Each bot is an independent folder under `src/` with its own token, its own
@@ -22,11 +22,13 @@ For the single-bot version of this template, see the `main` branch.
 | [`@spatulox/discord-module`](https://www.npmjs.com/package/@spatulox/discord-module) | `Module` / `ModuleManager` / `ModuleUI` (toggleable features) and `InteractionsManager` |
 | `dim` (bundled with the two above) | Interactive CLI that **generates** the `handler/*.json` interactions and deploys them to Discord |
 
+The full documentation lives in the [wiki](../../wiki).
+
 ## Compatibility
 
 | Template | discord.js | `@spatulox/simplediscordbot` | Node |
 |---|---|---|---|
-| current | 14.x | 3.x | >= 18 |
+| current | 14.x | 4.x | >= 18.17 |
 
 The badges above read `package.json` straight from this branch, so they always
 show what it actually depends on — nothing to keep in sync by hand.
@@ -35,6 +37,14 @@ A new discord.js major means a new template major. The
 [releases](../../releases) say what changed, and each one is tagged:
 `git checkout <tag>` gets you back the state that worked with the previous
 major.
+
+### Upgrading from `@spatulox/simplediscordbot` 3.x
+
+Only `DISCORD_BOT_DEV=true` (or `1`) enables the dev mode now — with 3.x, any
+non-empty value did, `false` included. Check your `.env` before deploying. The other
+breaking changes (`toInteractionEdit()` replaced by `toInteractionUpdate()`,
+`GuildManager.searchMember(guildId, memberId)`…) are listed in the
+[SimpleDiscordBot changelog](https://github.com/spatulox-discord/SimpleDiscordBot/blob/master/CHANGELOG.md).
 
 ## Setup
 
@@ -92,7 +102,7 @@ generates it for you:
 ### Where the files go
 
 `dim` reads and writes `<DISCORD_INTERACTION_FOLDER>/<category>` and appends
-`_dev` when `DISCORD_BOT_DEV` is set — exactly the convention
+`_dev` when `DISCORD_BOT_DEV=true` — exactly the convention
 `src/share/HandlersPath.ts` uses to read them back at runtime.
 
 **Run it once per bot.** `dim` is a separate process: it calls
@@ -181,9 +191,9 @@ apps, and drags bot-specific code into every bot that touches `share`.
   by side.
 - `src/<bot>/src/constantes.ts` returns the DEV ids instead of the PROD ones.
 
-Use `DISCORD_BOT_DEV=true` for dev and `DISCORD_BOT_DEV=false` (or empty) for
-production. Stick to `true` / `1` for dev : the bot also accepts other values,
-but the `dim` CLI only recognises these two.
+Only `DISCORD_BOT_DEV=true` (or `1`) means dev. Anything else — `false`, `0`,
+empty, absent — means production. The bot and the `dim` CLI follow the same
+rule.
 
 Each bot also sets `CACHE_FOLDER` to its own folder, so the `.utilscache/`
 written by `CacheManager` never collides between bots.
@@ -193,7 +203,7 @@ written by `CacheManager` never collides between bots.
 1. `npx dim` -> **Generate Files** -> slash command, with
    `DISCORD_INTERACTION_FOLDER` pointing at that bot. It writes
    `src/<bot>/handler/commands/mycommand.json` for you. Run it once with
-   `DISCORD_BOT_DEV` set and once without to get the `_dev` twin, giving the
+   `DISCORD_BOT_DEV=true` and once with `false` to get the `_dev` twin, giving the
    dev one a different `name`.
 2. Add `'mycommand'` to `HANDLERS_PATHS.commands` in `src/share/HandlersPath.ts`
    — it is a typed whitelist shared by every bot, `Handlers.load` throws for
