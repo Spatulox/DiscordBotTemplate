@@ -1,10 +1,10 @@
 # Discord Bot Template
 
 [![discord.js](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/discord.js?logo=discord&logoColor=white&label=discord.js)](https://discord.js.org/)
-[![simplediscordbot](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/@spatulox%2Fsimplediscordbot?label=simplediscordbot)](https://github.com/Spatulox/SimpleDiscordBot)
+[![simplediscordbot](https://img.shields.io/github/package-json/dependency-version/Spatulox/DiscordBotTemplate/@spatulox%2Fsimplediscordbot?label=simplediscordbot)](https://github.com/spatulox-discord/SimpleDiscordBot)
 
 A ready-to-use Discord bot template built on
-[SimpleDiscordBot](https://github.com/Spatulox/SimpleDiscordBot).
+[SimpleDiscordBot](https://github.com/spatulox-discord/SimpleDiscordBot).
 
 The framework handles login, logging, modules, interactions and command
 deployment, so this repository only contains what is specific to *your* bot.
@@ -15,11 +15,13 @@ deployment, so this repository only contains what is specific to *your* bot.
 | [`@spatulox/discord-module`](https://www.npmjs.com/package/@spatulox/discord-module) | `Module` / `ModuleManager` / `ModuleUI` (toggleable features) and `InteractionsManager` |
 | `dim` (bundled with the two above) | Interactive CLI that **generates** the `handler/*.json` interactions and deploys them to Discord |
 
+The full documentation lives in the [wiki](../../wiki).
+
 ## Compatibility
 
 | Template | discord.js | `@spatulox/simplediscordbot` | Node |
 |---|---|---|---|
-| current | 14.x | 3.x | >= 18 |
+| current | 14.x | 4.x | >= 18.17 |
 
 The badges above read `package.json` straight from the repository, so they
 always show what this branch actually depends on — nothing to keep in sync by
@@ -29,6 +31,14 @@ A new discord.js major means a new template major. The
 [releases](../../releases) say what changed, and each one is tagged:
 `git checkout <tag>` gets you back the state that worked with the previous
 major.
+
+### Upgrading from `@spatulox/simplediscordbot` 3.x
+
+Only `DISCORD_BOT_DEV=true` (or `1`) enables the dev mode now — with 3.x, any
+non-empty value did, `false` included. Check your `.env` before deploying. The other
+breaking changes (`toInteractionEdit()` replaced by `toInteractionUpdate()`,
+`GuildManager.searchMember(guildId, memberId)`…) are listed in the
+[SimpleDiscordBot changelog](https://github.com/spatulox-discord/SimpleDiscordBot/blob/master/CHANGELOG.md).
 
 ## Setup
 
@@ -78,7 +88,7 @@ generates it for you:
 ### Where the files go
 
 `dim` reads and writes `<DISCORD_INTERACTION_FOLDER>/<category>` and appends
-`_dev` when `DISCORD_BOT_DEV` is set — exactly the convention
+`_dev` when `DISCORD_BOT_DEV=true` — exactly the convention
 `src/utils/HandlersPath.ts` uses to read them back at runtime.
 
 Its default folder is `./handlers`; this template sets
@@ -108,9 +118,9 @@ by the rest of the project. Change either one, change both.
   by side.
 - `src/constantes.ts` returns the DEV ids instead of the PROD ones.
 
-Use `DISCORD_BOT_DEV=true` for dev and `DISCORD_BOT_DEV=false` (or empty) for
-production. Stick to `true` / `1` for dev : the bot also accepts other values,
-but the `dim` CLI only recognises these two.
+Only `DISCORD_BOT_DEV=true` (or `1`) means dev. Anything else — `false`, `0`,
+empty, absent — means production. The bot and the `dim` CLI follow the same
+rule.
 
 ## Layout
 
@@ -139,7 +149,7 @@ src/
 
 1. `npx dim` -> **Generate Files** -> slash command. It writes
    `handler/commands/mycommand.json` for you. Run it once with
-   `DISCORD_BOT_DEV` set and once without to get the `_dev` twin, giving the
+   `DISCORD_BOT_DEV=true` and once with `false` to get the `_dev` twin, giving the
    dev one a different `name`.
 2. Add `'mycommand'` to `HANDLERS_PATHS.commands` in `src/utils/HandlersPath.ts`
    — it is a typed whitelist, `Handlers.load` throws for anything missing.
